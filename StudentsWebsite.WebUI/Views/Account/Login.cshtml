@@ -1,0 +1,25 @@
+﻿@model StudentsWebsite.WebUI.Models.LoginViewModel
+
+@{
+    ViewBag.Title = "Login";
+    ViewBag.PageHeader = "Страница входа в систему";
+    Layout = "~/Views/_MainLayout.cshtml";
+}
+
+@using (Html.BeginForm()) { 
+
+    <label>Имя пользователя</label>
+    @Html.TextBox("UserName", null, new { @class = "form-control" });
+
+    <label>Пароль</label>
+    @Html.Password("Password", null, new { @class = "form-control" });
+
+    if (!Html.ViewData.ModelState.IsValid) 
+    { 
+        <div class="alert alert-danger" role="alert">
+            @Html.ValidationSummary()
+        </div>
+    }
+
+    <input type="submit" value="Войти" class="btn btn-primary" />
+}

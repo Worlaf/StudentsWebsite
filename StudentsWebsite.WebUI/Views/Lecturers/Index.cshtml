@@ -1,0 +1,58 @@
+﻿@model StudentsWebsite.WebUI.Models.LecturerViewModel[]
+@{
+    ViewBag.Title = "Преподаватели";
+    ViewBag.PageHeader = "Список преподавателей";
+    Layout = "~/Views/_MainLayout.cshtml";
+}
+
+@if (Context.User.IsInRole("Dean"))
+{
+    <a class="btn btn-default" href="~/Lecturers/Edit">
+        <span class="glyphicon glyphicon-plus-sign">Добавить преподавателя</span>
+    </a>
+}
+<table class="table display" id="lecturers">
+    <thead>
+        <tr>
+            <th>#</th>            
+            <th>Имя</th>
+            <th>Предмет</th>
+            <th>Студентов</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{int i = 1;}
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@i</td>
+                <td>
+                    @if (Context.User.IsInRole("Dean"))
+                    {
+                        <a class="btn btn-default btn-xs" href="~/Lecturers/Edit?userName=@u.UserName">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+                    }
+                    @if (Context.User.IsInRole("Lecturer") || Context.User.IsInRole("Dean"))
+                    {
+                        <a class="btn btn-default btn-xs" href="~/Lecturers/Card?userName=@u.UserName">
+                            <span class="glyphicon glyphicon-user"></span>
+                        </a>
+                    }
+                    @u.FullName
+                </td>
+                <td>@u.Subject</td>
+                <td>@u.StudentsCount</td>
+            </tr>
+            i++;
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $('#lecturers').DataTable({
+            "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "Все"]]
+        });
+    });
+</script>

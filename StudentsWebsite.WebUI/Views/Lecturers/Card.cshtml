@@ -1,0 +1,97 @@
+﻿@model StudentsWebsite.WebUI.Models.LecturerEditViewModel
+
+@{
+    ViewBag.Title = "Просмотр карточки преподавателя";
+    ViewBag.PageHeader = "Просмотр карточки преподавателя";
+    Layout = "~/Views/_MainLayout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    <h2>
+        @Model.Lecturer.FirstName @Model.Lecturer.LastName, @Model.Lecturer.Subject 
+        @if (Context.User.IsInRole("Dean"))
+        {
+            <a class="btn btn-default" href="~/Lecturers/Edit?userName=@Model.Lecturer.UserName">
+                <span class="glyphicon glyphicon-pencil"></span>Редактировать
+            </a>
+        }
+    </h2>
+    @Html.HiddenFor(m => m.LecturerUserName);
+    <br />
+     if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @Html.ValidationSummary()
+        </div>
+    }
+
+    <br />
+    <h2>Студенты</h2>
+
+    <table class="table display">
+        <thead>
+            <tr>
+                <th>Имя</th>
+                <th>Оценка</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Students.Count(); i++)
+            {
+                <tr>
+                    <td>
+                        @Html.HiddenFor(m => Model.Students[i].StudentUserName)
+                        @if (Context.User.IsInRole("Dean") || Context.User.IsInRole("Lecturer"))
+                        {
+                            <a class="btn btn-default btn-xs" href="~/Students/Edit?userName=@Model.Students[i].StudentUserName">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </a>
+                        }
+                        @if (Context.User.IsInRole("Student") || Context.User.IsInRole("Dean") || Context.User.IsInRole("Lecturer"))
+                        {
+                            <a class="btn btn-default btn-xs" href="~/Students/Card?userName=@Model.Students[i].StudentUserName">
+                                <span class="glyphicon glyphicon-user"></span>
+                            </a>
+                        }
+                        @Model.Students[i].StudentFullName
+                    </td>
+
+                    <td>
+                        @Html.HiddenFor(m => Model.Students[i].Rating)
+                        @if (Model.Lecturer.UserName == Context.User.Identity.Name || Context.User.IsInRole("Dean"))
+                        {
+                            <a class="btn btn-default btn-xs rating-edit">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </a>
+                        }
+                        @if (Model.Students[i].Rating >= 0)
+                        {                            
+                            <span>@Model.Students[i].Rating</span>
+                        }
+                        else
+                        {
+                            <span>Нет оценки</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    if (Model.Lecturer.UserName == Context.User.Identity.Name || Context.User.IsInRole("Dean"))
+    {
+        <input type="submit" value="Сохранить оценки" class="btn btn-primary" />
+    }
+   
+
+    
+}
+
+<script>
+    $(document).ready(function () {
+       // $('#lecturers').DataTable();
+        $(".rating-edit").ratingEditor();
+    });
+</script>
+
+

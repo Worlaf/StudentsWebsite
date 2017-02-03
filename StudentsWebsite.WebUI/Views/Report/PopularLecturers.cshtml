@@ -1,0 +1,50 @@
+﻿@model StudentsWebsite.WebUI.Models.LecturerViewModel[]
+@{
+    ViewBag.Title = "Популярные преподаватели";
+    ViewBag.PageHeader = "Преподаватели, предметы которых посещяют все студенты";
+    Layout = "~/Views/_MainLayout.cshtml";
+}
+
+<table class="table display" id="students">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Количество студентов</th>
+            <th>Предмет</th>
+            <th>Преподаватель</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0, num = 1; i < Model.Length; i++, num++)
+        {
+            <tr>
+                <td>@num</td>
+                <td>@Model[i].StudentsCount</td>
+                <td>@Model[i].Subject</td>
+                <td>
+                    
+                        <a class="btn btn-default btn-xs" href="~/Lecturers/Edit?userName=@Model[i].UserName">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+                  
+                        <a class="btn btn-default btn-xs" href="~/Lecturers/Card?userName=@Model[i].UserName">
+                            <span class="glyphicon glyphicon-user"></span>
+                        </a>
+                    
+                    @Model[i].FullName
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#students').DataTable({
+            "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "Все"]]
+        });
+    });
+</script>

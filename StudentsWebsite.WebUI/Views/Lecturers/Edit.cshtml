@@ -1,0 +1,107 @@
+﻿@model StudentsWebsite.WebUI.Models.LecturerEditViewModel
+
+@{
+    ViewBag.Title = "Редактирование карточки преподавателя";
+    ViewBag.PageHeader = "Редактирование карточки преподавателя";
+    Layout = "~/Views/_MainLayout.cshtml";
+}
+
+@using (Html.BeginForm()) {    
+    
+     if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @Html.ValidationSummary()
+        </div>
+    } 
+    <label>Логин</label>
+    if (Model.Lecturer.UserName == "")
+    {
+        @Html.TextBox("Lecturer.UserName", null, new { @class = "form-control" });
+    }
+    else
+    {
+        @Html.TextBox("Lecturer.UserName", null, new { @class = "form-control", @readonly = "readonly" });
+    }
+    
+    <label>Пароль</label>
+    @Html.TextBox("Lecturer.Password", null, new { @class = "form-control" });
+    <label>Имя</label>
+    @Html.TextBox("Lecturer.FirstName", null, new { @class = "form-control" });
+    <label>Фамилия</label>
+    @Html.TextBox("Lecturer.LastName", null, new { @class = "form-control" });
+    <label>Предмет</label>
+    @Html.TextBox("Lecturer.Subject", null, new { @class = "form-control" });
+    <br />
+    
+    
+    <br />
+    <h2>Выбор студентов</h2>
+
+    <table class="table display" id="students">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Имя</th>
+                <th>Оценка</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Students.Count(); i++)
+            {
+                <tr>
+                    <td>
+                        @Html.CheckBoxFor(m => Model.Students[i].Selected)
+                        @Html.HiddenFor(m => Model.Students[i].StudentUserName)
+                    </td>
+                    <td>
+                        @if (Context.User.IsInRole("Dean") || Context.User.IsInRole("Lecturer"))
+                        {
+                            <a class="btn btn-default btn-xs" href="~/Students/Edit?userName=@Model.Students[i].StudentUserName">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </a>
+                        }
+                        @if (Context.User.IsInRole("Student") || Context.User.IsInRole("Dean") || Context.User.IsInRole("Lecturer"))
+                        {
+                            <a class="btn btn-default btn-xs" href="~/Students/Card?userName=@Model.Students[i].StudentUserName">
+                                <span class="glyphicon glyphicon-user"></span>
+                            </a>
+                        }
+                        @Model.Students[i].StudentFullName
+                    </td>
+                    <td>
+                        @Html.HiddenFor(m => Model.Students[i].Rating)
+                        @if (Model.Students[i].Selected) 
+                        { 
+                            <a class="btn btn-default btn-xs rating-edit">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </a>
+                        }
+                        @if (Model.Students[i].Rating >= 0)
+                        {                            
+                            <span>@Model.Students[i].Rating</span>
+                        }
+                        else
+                        {
+                            <span>Нет оценки</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+    <input type="submit" value="@ViewBag.ActionString" class="btn btn-primary" />
+   
+}
+
+<script>
+    $(document).ready(function () {
+        //$('#students').DataTable();
+        $(".rating-edit").ratingEditor();
+       
+    });
+</script>
+
+
+

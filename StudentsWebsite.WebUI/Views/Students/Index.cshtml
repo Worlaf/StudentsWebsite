@@ -1,0 +1,68 @@
+﻿@model StudentsWebsite.WebUI.Models.StudentViewModel[]
+
+@{
+    ViewBag.Title = "Студенты";
+    ViewBag.PageHeader = "Список студентов";
+    Layout = "~/Views/_MainLayout.cshtml";
+}
+
+@if (Context.User.IsInRole("Dean") || Context.User.IsInRole("Lecturer"))
+{
+    <a class="btn btn-default" href="~/Students/Edit">
+        <span class="glyphicon glyphicon-plus-sign">Добавить студента</span>
+    </a>
+}
+<table class="table display" id="students">
+    <thead>
+        <tr>
+            <th>#</th>            
+            <th>Имя</th>
+            <th>Предметов</th>
+            <th>Средний балл</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{int i = 1;}
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@i</td>
+                <td>
+                    @if (Context.User.IsInRole("Dean") || Context.User.IsInRole("Lecturer"))
+                    {
+                        <a class="btn btn-default btn-xs" href="~/Students/Edit?userName=@u.UserName">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+                    }
+                    @if (Context.User.IsInRole("Student") || Context.User.IsInRole("Dean") || Context.User.IsInRole("Lecturer"))
+                    {
+                        <a class="btn btn-default btn-xs" href="~/Students/Card?userName=@u.UserName">
+                            <span class="glyphicon glyphicon-user"></span>
+                        </a>
+                    }
+                    @u.FullName
+                </td>
+                <td>@u.SubjectCount</td>
+                <td>
+                    @if (u.AverageRating >= 0)
+                    {
+                        @u.AverageRating
+                    }
+                    else
+                    {
+                        <span>Нет оценок</span>
+                    }
+                
+                </td>                
+            </tr>
+                    i++;
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#students').DataTable({
+            "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "Все"]]
+        });
+    });
+</script>

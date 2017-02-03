@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" />    
+    <link href="~/Content/DataTables/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="~/Content/Layout.css" rel="stylesheet" />
+
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/jquery.datatables.min.js"></script>
+    <script src="~/Scripts/ratingEditor.js"></script>
+
+</head>
+<body>
+    <div class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Students Website</a>
+            </div> 
+        </div>                               
+    </div>
+    <div class="row panel">
+        <div class="col-xs-2">
+            <ul class="nav nav-pills nav-stacked">
+                <li><a href="~/Lecturers/">Список преподавателей</a></li>
+                <li><a href="~/Students/">Список студентов</a></li>
+               
+                    @if (Context.User != null && Context.User.IsInRole("Dean"))
+                    {
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                Отчеты
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li><a href="~/Report/PopularLecturers">Преподаватели, которых посещают все студенты</a></li>
+                                <li><a href="~/Report/TopStudents">Студенты, чей балл выше среднего</a></li>
+                                <li><a href="~/Report/UnpopularLecturers">Преподаватели, чьи предметы посещают меньше всех студентов</a></li>
+                            </ul>
+                        </li>
+                    }
+                
+            </ul>
+            <div class="well">
+                <div>Авторизация</div>
+                @if (Context.User == null || Context.User.Identity.IsAuthenticated == false)
+                {
+                    <a href="~/Account/Login">Войти</a>
+                }
+                else
+                {
+                    if (Session["Group"] == "Преподаватели")
+                    {
+                        <a href="~/Lecturers/Card?userName=@Context.User.Identity.Name">@Session["FullName"]</a>
+                    }
+                    else if (Session["Group"] == "Студенты")
+                    {
+                        <a href="~/Students/Card?userName=@Context.User.Identity.Name">@Session["FullName"]</a>
+                    }
+                    else
+                    {
+                        @Session["FullName"]
+                    }
+                    <span>, </span>
+                    @Session["Group"]
+                    <a href="~/Account/Logout?ReturnUrl=@Request.Url.AbsoluteUri">Выйти</a>
+                }
+            </div>
+        </div>
+        <div class="col-xs-9">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">@ViewBag.PageHeader</h3>
+                </div>
+                <div class="panel-body">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        Тестовое задание Student's Website<br />
+        @DateTime.Now
+        <br />
+        Преподавателей в базе: @Context.Application["TotalLecturers"]
+        <br />
+        Студентов в базе: @Context.Application["TotalStudents"]
+    </footer>
+    
+</body>
+</html>
