@@ -10,13 +10,12 @@ namespace StudentsWebsite.WebUI.Controllers
 {
     public class UtilityController : Controller
     {
-         IDataRepository dataRepository;
-         public UtilityController(IDataRepository dataRepository)
-         {
-             this.dataRepository = dataRepository;
-         }
-        //
-        // GET: /Utility/
+        IDataRepository dataRepository;
+        public UtilityController(IDataRepository dataRepository)
+        {
+            this.dataRepository = dataRepository;
+        }
+
         public ActionResult Index()
         {
             return View();
@@ -28,5 +27,5 @@ namespace StudentsWebsite.WebUI.Controllers
 
             return View();
         }
-	}
+    }
 }

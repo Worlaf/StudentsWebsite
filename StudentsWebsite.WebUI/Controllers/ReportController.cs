@@ -15,8 +15,7 @@ namespace StudentsWebsite.WebUI.Controllers
         {
             this.dataRepository = dataRepository;
         }
-        //
-        // GET: /Report/
+        
         public ActionResult Index()
         {
             return RedirectToAction("TopStudents");
@@ -25,105 +24,63 @@ namespace StudentsWebsite.WebUI.Controllers
         [Authorize(Roles = "Dean")]
         public ActionResult TopStudents()
         {
-            User[] students = dataRepository.Users.Where(u => u.Role == Domain.Entities.User.Roles.Student).ToArray();
-            Models.StudentViewModel[] models = new Models.StudentViewModel[students.Length];
-
-            int subjectsCount;
-            double averageRating;
-
+            var students = dataRepository.Users.Where(u => u.Role == Domain.Entities.User.Roles.Student).ToArray();           
             double totalAverage = 0;
-
-            IEnumerable<Rating> ratings;
-
-            for (int i = 0; i < models.Length; i++)
-            {
-                ratings = dataRepository.Ratings.Where(r => r.Student_UserName == students[i].UserName);
-                
-                subjectsCount = ratings.Count(r => r.Rate >= 0);
-                if (subjectsCount > 0)
-                    averageRating = ratings.Sum(r => r.Rate >= 0 ? (double)r.Rate : 0) / subjectsCount;
-                else
-                    averageRating = 0;
-                totalAverage += averageRating;
-
-                models[i] = new Models.StudentViewModel()
+            var models = students
+                .Select(s =>
                 {
-                    AverageRating = (int)averageRating,
-                    SubjectCount = subjectsCount,
-                    UserName = students[i].UserName,
-                    FullName = students[i].FirstName + " " + students[i].LastName
-                };
-            }
-
-            totalAverage /= students.Length;
-
-            models = models.Where(m => m.AverageRating > totalAverage).ToArray();
-
+                    var ratings = dataRepository.Ratings.Where(r => r.Student_UserName == s.UserName);
+                    var subjectsCount = ratings.Count(r => r.Rate >= 0);
+                    var average = subjectsCount > 0 ? ratings.Sum(r => r.Rate >= 0 ? (double)r.Rate : 0) / subjectsCount : 0;
+                    totalAverage += average / students.Length;
+                    return new Models.StudentViewModel
+                    {
+                        AverageRating = (int)average,
+                        SubjectCount = subjectsCount,
+                        UserName = s.UserName,
+                        FullName = s.FirstName + " " + s.LastName
+                    };
+                })
+                .Where(m => m.AverageRating > totalAverage)
+                .ToArray();
+            
             ViewBag.TotalAverage = (int)totalAverage;
 
             return View(models);
         }
+
         [Authorize(Roles = "Dean")]
         public ActionResult PopularLecturers()
         {
-            User[] lecturers = dataRepository.Users.Where(u => u.Role == Domain.Entities.User.Roles.Lecturer).ToArray();
-            int allStudentsCount = dataRepository.Users.Count(u => u.Role == Domain.Entities.User.Roles.Student);
-            int ratingsCount;
-
-            List<Models.LecturerViewModel> models = new List<Models.LecturerViewModel>();
-            Models.LecturerViewModel model;
-
-            for (int i = 0; i < lecturers.Length; i++)
-            {
-                ratingsCount = dataRepository.Ratings.Count(r => r.Lecturer_UserName == lecturers[i].UserName);
-
-                if (ratingsCount == allStudentsCount)
+            var lecturers = dataRepository.Users.Where(u => u.Role == Domain.Entities.User.Roles.Lecturer).ToArray();
+            var allStudentsCount = dataRepository.Users.Count(u => u.Role == Domain.Entities.User.Roles.Student);
+            var models = lecturers
+                .Where(l => dataRepository.Ratings.Count(r => r.Lecturer_UserName == l.UserName) == allStudentsCount)
+                .Select(l => new Models.LecturerViewModel
                 {
-                    model = new Models.LecturerViewModel()
-                    {
-                        FullName = lecturers[i].FirstName + " " + lecturers[i].LastName,
-                        UserName = lecturers[i].UserName,
-                        StudentsCount = ratingsCount,
-                        Subject = lecturers[i].Subject
-                    };
+                    FullName = l.FirstName + " " + l.LastName,
+                    UserName = l.UserName,
+                    StudentsCount = dataRepository.Ratings.Count(r => r.Lecturer_UserName == l.UserName),
+                    Subject = l.Subject
+                })
+                .ToArray();
 
-                    models.Add(model);
-                }
-            }
-
-            return View(models.ToArray());
-
+            return View(models);
         }
         [Authorize(Roles = "Dean")]
         public ActionResult UnpopularLecturers()
         {
-            User[] lecturers = dataRepository.Users.Where(u => u.Role == Domain.Entities.User.Roles.Lecturer).ToArray();           
-            int ratingsCount;
-            int minimum = Int32.MaxValue;
-            Models.LecturerViewModel[] models = new Models.LecturerViewModel[lecturers.Length];
-            Models.LecturerViewModel model;
-
-            for (int i = 0; i < lecturers.Length; i++)
-            {
-                ratingsCount = dataRepository.Ratings.Count(r => r.Lecturer_UserName == lecturers[i].UserName);
-                if (ratingsCount < minimum)
-                    minimum = ratingsCount;
-              
-                    model = new Models.LecturerViewModel()
-                    {
-                        FullName = lecturers[i].FirstName + " " + lecturers[i].LastName,
-                        UserName = lecturers[i].UserName,
-                        StudentsCount = ratingsCount,
-                        Subject = lecturers[i].Subject
-                    };
-
-                    models[i] = model;
-                
-            }
-
-            minimum = minimum + 1;
-
-            models = models.Where(m => m.StudentsCount <= minimum).ToArray();
+            var lecturers = dataRepository.Users.Where(u => u.Role == Domain.Entities.User.Roles.Lecturer).ToArray();   
+            var minimum = lecturers.Min(l => (decimal?)dataRepository.Ratings.Count(r => r.Lecturer_UserName == l.UserName)) + 1;
+            var models = lecturers
+                .Select(l => new Models.LecturerViewModel
+                {
+                    FullName = l.FirstName + " " + l.LastName,
+                    UserName = l.UserName,
+                    StudentsCount = dataRepository.Ratings.Count(r => r.Lecturer_UserName == l.UserName),
+                    Subject = l.Subject
+                })
+                .Where(m => m.StudentsCount <= minimum);            
 
             return View(models);
         }
