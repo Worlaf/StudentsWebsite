@@ -19,7 +19,7 @@ namespace StudentsWebsite.WebUI.Controllers
         }
        
         public ActionResult Index()
-        {
+        {            
             return View();
         }
 

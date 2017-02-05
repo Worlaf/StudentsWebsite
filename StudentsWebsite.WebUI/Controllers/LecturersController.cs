@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.WebPages;
 using StudentsWebsite.Domain.Abstract;
 using StudentsWebsite.Domain.Entities;
 using StudentsWebsite.WebUI.Utility;
@@ -69,7 +70,7 @@ namespace StudentsWebsite.WebUI.Controllers
         [Authorize(Roles = "Dean, Lecturer")]
         public ActionResult Card(Models.LecturerEditViewModel viewModel)
         {
-            if (!viewModel.LecturerUserName.IsNullOrEmpty() && viewModel.Students != null && (HttpContext.User.IsDean() || HttpContext.User.Identity.Name == viewModel.LecturerUserName))
+            if (!viewModel.LecturerUserName.IsEmpty() && viewModel.Students != null && (HttpContext.User.IsDean() || HttpContext.User.Identity.Name == viewModel.LecturerUserName))
             {
                 var students = viewModel.Students;
                 var newRatings = students.Where(s => dataRepository.GetUser(s.StudentUserName) != null).Select(s =>
@@ -127,8 +128,8 @@ namespace StudentsWebsite.WebUI.Controllers
             Models.LecturerEditViewModel.StudentSelection[] studentSelections = new Models.LecturerEditViewModel.StudentSelection[students.Length];
             var studentsSelection = students.Select(s =>
             {
-                var rating = ratings.FirstOrDefault(r => r.Student_UserName == students[i].UserName)
-                var selection = new Models.LecturerEditViewModel.StudentSelection{
+                var rating = ratings.FirstOrDefault(r => r.Student_UserName == s.UserName);
+                return new Models.LecturerEditViewModel.StudentSelection{
                     StudentUserName = s.UserName,
                     StudentFullName = s.FirstName + " " + s.LastName,
                     Rating = rating != null ? rating.Rate : -1,

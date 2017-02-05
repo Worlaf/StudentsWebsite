@@ -1,4 +1,5 @@
-﻿@model StudentsWebsite.WebUI.Models.StudentViewModel[]
+﻿@using StudentsWebsite.WebUI.Utility
+@model StudentsWebsite.WebUI.Models.StudentViewModel[]
 
 @{
     ViewBag.Title = "Студенты";
@@ -6,7 +7,7 @@
     Layout = "~/Views/_MainLayout.cshtml";
 }
 
-@if (Context.User.IsInRole("Dean") || Context.User.IsInRole("Lecturer"))
+@if (Context.User.IsDean() || Context.User.IsLecturer())
 {
     <a class="btn btn-default" href="~/Students/Edit">
         <span class="glyphicon glyphicon-plus-sign">Добавить студента</span>
@@ -28,13 +29,13 @@
             <tr>
                 <td>@i</td>
                 <td>
-                    @if (Context.User.IsInRole("Dean") || Context.User.IsInRole("Lecturer"))
+                    @if (Context.User.IsDean() || Context.User.IsLecturer())
                     {
                         <a class="btn btn-default btn-xs" href="~/Students/Edit?userName=@u.UserName">
                             <span class="glyphicon glyphicon-pencil"></span>
                         </a>
                     }
-                    @if (Context.User.IsInRole("Student") || Context.User.IsInRole("Dean") || Context.User.IsInRole("Lecturer"))
+                    @if (Context.User.IsStudent() || Context.User.IsDean() || Context.User.IsLecturer())
                     {
                         <a class="btn btn-default btn-xs" href="~/Students/Card?userName=@u.UserName">
                             <span class="glyphicon glyphicon-user"></span>

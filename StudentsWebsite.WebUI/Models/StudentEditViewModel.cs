@@ -12,20 +12,14 @@ namespace StudentsWebsite.WebUI.Models
         public class LecturerSelection
         {
             public string LecturerUserName { get; set; }
-
             public string LecturerFullName { get; set; }
-
             public string LecturerSubject { get; set; }
-
             public int Rating { get; set; }
-
             public bool Selected { get; set; }
         }
 
         public User Student { get; set; }
-
         public string StudentUserName { get; set; }
-
         public LecturerSelection[] Lecturers { get; set; }
 
     }

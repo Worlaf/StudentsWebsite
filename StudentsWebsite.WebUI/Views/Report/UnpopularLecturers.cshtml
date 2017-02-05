@@ -15,23 +15,24 @@
         </tr>
     </thead>
     <tbody>
-        @for (int i = 0, num = 1; i < Model.Length; i++, num++)
+        @{var num = 1;}
+        @foreach (var m in Model)
         {
             <tr>
                 <td>@num</td>
-                <td>@Model[i].StudentsCount</td>
-                <td>@Model[i].Subject</td>
+                <td>@m.StudentsCount</td>
+                <td>@m.Subject</td>
                 <td>
 
-                    <a class="btn btn-default btn-xs" href="~/Lecturers/Edit?userName=@Model[i].UserName">
+                    <a class="btn btn-default btn-xs" href="~/Lecturers/Edit?userName=@m.UserName">
                         <span class="glyphicon glyphicon-pencil"></span>
                     </a>
 
-                    <a class="btn btn-default btn-xs" href="~/Lecturers/Card?userName=@Model[i].UserName">
+                    <a class="btn btn-default btn-xs" href="~/Lecturers/Card?userName=@m.UserName">
                         <span class="glyphicon glyphicon-user"></span>
                     </a>
 
-                    @Model[i].FullName
+                    @m.FullName
                 </td>
             </tr>
 

@@ -1,4 +1,5 @@
-﻿@model StudentsWebsite.WebUI.Models.StudentEditViewModel
+﻿@using StudentsWebsite.WebUI.Utility
+@model StudentsWebsite.WebUI.Models.StudentEditViewModel
 
 @{
     ViewBag.Title = "Просмотр карточки студента";
@@ -10,7 +11,7 @@
 {
     <h2>
         @Model.Student.FirstName @Model.Student.LastName
-        @if (Context.User.IsInRole("Dean") || Context.User.IsInRole("Lecturer"))
+        @if (Context.User.IsDean() || Context.User.IsLecturer())
         {
             <a class="btn btn-default" href="~/Students/Edit?userName=@Model.Student.UserName">
                 <span class="glyphicon glyphicon-pencil"></span>Редактировать
@@ -38,41 +39,41 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < Model.Lecturers.Count(); i++)
+            @foreach (var lecturer in Model.Lecturers)
             {
                 <tr>
                     <td>
-                        @Html.HiddenFor(m => Model.Lecturers[i].LecturerSubject)
-                        @Model.Lecturers[i].LecturerSubject
+                        @Html.HiddenFor(m => lecturer.LecturerSubject)
+                        @lecturer.LecturerSubject
                     </td>
                     <td>
-                        @Html.HiddenFor(m => Model.Lecturers[i].LecturerUserName)
-                        @if (Context.User.IsInRole("Dean"))
+                        @Html.HiddenFor(m => lecturer.LecturerUserName)
+                        @if (Context.User.IsDean())
                         {
-                            <a class="btn btn-default btn-xs" href="~/Lecturers/Edit?userName=@Model.Lecturers[i].LecturerUserName">
+                            <a class="btn btn-default btn-xs" href="~/Lecturers/Edit?userName=@lecturer.LecturerUserName">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </a>
                         }
-                        @if ( Context.User.IsInRole("Dean") || Context.User.IsInRole("Lecturer"))
+                        @if ( Context.User.IsDean() || Context.User.IsLecturer())
                         {
-                            <a class="btn btn-default btn-xs" href="~/Lecturers/Card?userName=@Model.Lecturers[i].LecturerUserName">
+                            <a class="btn btn-default btn-xs" href="~/Lecturers/Card?userName=@lecturer.LecturerUserName">
                                 <span class="glyphicon glyphicon-user"></span>
                             </a>
                         }
-                        @Model.Lecturers[i].LecturerFullName
+                        @lecturer.LecturerFullName
                     </td>
 
                     <td>
-                        @Html.HiddenFor(m => Model.Lecturers[i].Rating)
-                        @if (Model.Lecturers[i].LecturerUserName == Context.User.Identity.Name || Context.User.IsInRole("Dean"))
+                        @Html.HiddenFor(m => lecturer.Rating)
+                        @if (lecturer.LecturerUserName == Context.User.Identity.Name || Context.User.IsDean())
                         {
                             <a class="btn btn-default btn-xs rating-edit">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </a>
                         }
-                        @if (Model.Lecturers[i].Rating >= 0)
+                        @if (lecturer.Rating >= 0)
                         {
-                            <span>@Model.Lecturers[i].Rating</span>
+                            <span>@lecturer.Rating</span>
                         }
                         else
                         {
@@ -83,7 +84,7 @@
             }
         </tbody>
     </table>
-    if (Model.Lecturers.Count(l => l.LecturerUserName ==  Context.User.Identity.Name)>= 1|| Context.User.IsInRole("Dean"))
+    if (Model.Lecturers.Count(l => l.LecturerUserName ==  Context.User.Identity.Name)>= 1|| Context.User.IsDean())
     {
         <input type="submit" value="Сохранить оценки" class="btn btn-primary" />
     }

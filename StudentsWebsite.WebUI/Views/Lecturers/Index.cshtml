@@ -1,4 +1,5 @@
-﻿@model StudentsWebsite.WebUI.Models.LecturerViewModel[]
+﻿@using StudentsWebsite.WebUI.Utility
+@model StudentsWebsite.WebUI.Models.LecturerViewModel[]
 @{
     ViewBag.Title = "Преподаватели";
     ViewBag.PageHeader = "Список преподавателей";
@@ -27,13 +28,13 @@
             <tr>
                 <td>@i</td>
                 <td>
-                    @if (Context.User.IsInRole("Dean"))
+                    @if (Context.User.IsDean())
                     {
                         <a class="btn btn-default btn-xs" href="~/Lecturers/Edit?userName=@u.UserName">
                             <span class="glyphicon glyphicon-pencil"></span>
                         </a>
                     }
-                    @if (Context.User.IsInRole("Lecturer") || Context.User.IsInRole("Dean"))
+                    @if (Context.User.IsLecturer() || Context.User.IsDean())
                     {
                         <a class="btn btn-default btn-xs" href="~/Lecturers/Card?userName=@u.UserName">
                             <span class="glyphicon glyphicon-user"></span>

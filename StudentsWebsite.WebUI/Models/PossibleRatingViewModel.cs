@@ -9,15 +9,10 @@ namespace StudentsWebsite.WebUI.Models
     public class PossibleRatingViewModel
     {
         public string LecturerName { get; set; }
-
         public string LecturerFullName { get; set; }
-
         public string StudentName { get; set; }
-
         public string StudentFullName { get; set; }
-
         public int Rating { get; set; }
-
         public bool Selected { get; set; }
 
         public PossibleRatingViewModel(User student, User lecturer, int rating, bool selected)

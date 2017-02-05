@@ -7,12 +7,11 @@
 }
 
 @using (Html.BeginForm()) { 
-
-    <label>Имя пользователя</label>
-    @Html.TextBox("UserName", null, new { @class = "form-control" });
-
-    <label>Пароль</label>
-    @Html.Password("Password", null, new { @class = "form-control" });
+    @Html.LabelFor(m => m.UserName)
+    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+    
+    @Html.LabelFor(m => m.Password)
+    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
 
     if (!Html.ViewData.ModelState.IsValid) 
     { 

@@ -1,4 +1,5 @@
-﻿@model StudentsWebsite.WebUI.Models.StudentEditViewModel
+﻿@using StudentsWebsite.WebUI.Utility
+@model StudentsWebsite.WebUI.Models.StudentEditViewModel
 
 @{
     ViewBag.Title = "Редактирование карточки студента";
@@ -18,18 +19,18 @@
     <label>Логин</label>
     if (Model.Student.UserName == "")
     {
-        @Html.TextBox("Student.UserName", null, new { @class = "form-control" });
+        @Html.TextBoxFor(m => m.Student.UserName, new { @class = "form-control" });
     }
     else
     {
-        @Html.TextBox("Student.UserName", null, new { @class = "form-control", @readonly = "readonly" });
+        @Html.TextBoxFor(m => m.Student.UserName, new { @class = "form-control", @readonly = "readonly" });
     }
     <label>Пароль</label>
-    @Html.TextBox("Student.Password", null, new { @class = "form-control" });
+    @Html.TextBoxFor(m => m.Student.Password ,new { @class = "form-control" });
     <label>Имя</label>
-    @Html.TextBox("Student.FirstName", null, new { @class = "form-control" });
+    @Html.TextBoxFor(m => m.Student.FirstName ,new { @class = "form-control" });
     <label>Фамилия</label>
-    @Html.TextBox("Student.LastName", null, new { @class = "form-control" });
+    @Html.TextBoxFor(m => m.Student.LastName ,new { @class = "form-control" });
     
     <br />
     <h2>Выбор преподавателей</h2>
@@ -44,40 +45,40 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < Model.Lecturers.Count(); i++)
+            @foreach (var lecturer in Model.Lecturers)
             {
                 <tr>
                     <td>
-                        @Html.CheckBoxFor(m => Model.Lecturers[i].Selected)
-                        @Html.HiddenFor(m => Model.Lecturers[i].LecturerUserName)
+                        @Html.CheckBoxFor(m => lecturer.Selected)
+                        @Html.HiddenFor(m => lecturer.LecturerUserName)
                     </td>
-                    <td>@Model.Lecturers[i].LecturerSubject</td>
+                    <td>@lecturer.LecturerSubject</td>
                     <td>
-                        @if (Context.User.IsInRole("Dean"))
+                        @if (Context.User.IsDean())
                         {
-                            <a class="btn btn-default btn-xs" href="~/Lecturers/Edit?userName=@Model.Lecturers[i].LecturerUserName">
+                            <a class="btn btn-default btn-xs" href="~/Lecturers/Edit?userName=@lecturer.LecturerUserName">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </a>
                         }
-                        @if (Context.User.IsInRole("Lecturer") || Context.User.IsInRole("Dean"))
+                        @if (Context.User.IsLecturer() || Context.User.IsDean())
                         {
-                            <a class="btn btn-default btn-xs" href="~/Lecturers/Card?userName=@Model.Lecturers[i].LecturerUserName">
+                            <a class="btn btn-default btn-xs" href="~/Lecturers/Card?userName=@lecturer.LecturerUserName">
                                 <span class="glyphicon glyphicon-user"></span>
                             </a>
                         }
-                        @Model.Lecturers[i].LecturerFullName
+                        @lecturer.LecturerFullName
                     </td>
                     <td>
-                        @Html.HiddenFor(m => Model.Lecturers[i].Rating)
-                        @if (Model.Lecturers[i].Selected && (Model.Lecturers[i].LecturerUserName == Context.User.Identity.Name || Context.User.IsInRole("Dean")))
+                        @Html.HiddenFor(m => lecturer.Rating)
+                        @if (lecturer.Selected && (lecturer.LecturerUserName == Context.User.Identity.Name || Context.User.IsDean()))
                         {
                             <a class="btn btn-default btn-xs rating-edit">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </a>
                         }
-                        @if (Model.Lecturers[i].Rating >= 0)
+                        @if (lecturer.Rating >= 0)
                         {                            
-                           <span>@Model.Lecturers[i].Rating</span>                
+                           <span>@lecturer.Rating</span>                
                         }
                         else
                         {

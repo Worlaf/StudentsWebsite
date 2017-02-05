@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.WebPages;
 using StudentsWebsite.Domain.Abstract;
 using StudentsWebsite.Domain.Entities;
 using StudentsWebsite.WebUI.Utility;
@@ -73,7 +74,7 @@ namespace StudentsWebsite.WebUI.Controllers
         [Authorize(Roles = "Dean, Lecturer")]
         public ActionResult Card(Models.StudentEditViewModel viewModel)
         {
-            if (viewModel.StudentUserName.IsNullOrEmpty() && viewModel.Lecturers != null && (HttpContext.User.IsDean() || HttpContext.User.IsLecturer()))
+            if (viewModel.StudentUserName.IsEmpty() && viewModel.Lecturers != null && (HttpContext.User.IsDean() || HttpContext.User.IsLecturer()))
             {
                 var lecturers = viewModel.Lecturers;
                 var newRatings = lecturers
@@ -126,7 +127,7 @@ namespace StudentsWebsite.WebUI.Controllers
             var lecturers = dataRepository.Users.Where(u => u.Role == Domain.Entities.User.Roles.Lecturer);
             editViewModel.Lecturers = lecturers.Select(l =>
             {
-                var rating = ratings.FirstOrDefault(r => r.Lecturer_UserName == lecturers[i].UserName);
+                var rating = ratings.FirstOrDefault(r => r.Lecturer_UserName == l.UserName);
                 return new Models.StudentEditViewModel.LecturerSelection
                 {
                     LecturerUserName = l.UserName,

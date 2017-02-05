@@ -14,25 +14,26 @@
         </tr>
     </thead>
     <tbody>
-        @for (int i = 0, num = 1; i < Model.Length; i++, num++)
+        @{var num = 1;}
+        @foreach (var m in Model)
         {
             <tr>
                 <td>@num</td>
-                <td>@Model[i].AverageRating</td>
+                <td>@m.AverageRating</td>
                 <td>
                    
-                        <a class="btn btn-default btn-xs" href="~/Students/Edit?userName=@Model[i].UserName">
+                        <a class="btn btn-default btn-xs" href="~/Students/Edit?userName=@m.UserName">
                             <span class="glyphicon glyphicon-pencil"></span>
                         </a>
                     
-                        <a class="btn btn-default btn-xs" href="~/Students/Card?userName=@Model[i].UserName">
+                        <a class="btn btn-default btn-xs" href="~/Students/Card?userName=@m.UserName">
                             <span class="glyphicon glyphicon-user"></span>
                         </a>
                     
-                    @Model[i].FullName
+                    @m.FullName
                 </td>
             </tr>
-            
+            num++;
         }
     </tbody>
 </table>
