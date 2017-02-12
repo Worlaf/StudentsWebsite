@@ -9,7 +9,7 @@ namespace StudentsWebsite.WebUI.Helpers
 {
     public static class TestDataTableGenerator
     {
-        public static void FillTable(IDataRepository repository)
+        public static void FillTable(IDataRepositoryOld repository)
         {
             int i, j;
             if (repository.Users.Count() != 0)
@@ -26,35 +26,35 @@ namespace StudentsWebsite.WebUI.Helpers
                 "Стандартизация", "Метрология"
             };
             string login, pass, firstName, lastName, subject;
-            User user;
+            DbUser user;
 
-            user = new User(){
+            user = new DbUser(){
                     UserName = "dean",
                     Password = "dean",
                     FirstName = "Владимир",
                     LastName = "Петров",
                     Subject = "",
-                    Role = User.Roles.Dean
+                    Role = UserRoles.Dean
                 };
             repository.SaveUser(user);
-            user = new User()
+            user = new DbUser()
             {
                 UserName = "student",
                 Password = "student",
                 FirstName = "Семён",
                 LastName = "Полупроводников",
                 Subject = "",
-                Role = User.Roles.Student
+                Role = UserRoles.Student
             };
             repository.SaveUser(user);
-            user = new User()
+            user = new DbUser()
             {
                 UserName = "lecturer",
                 Password = "lecturer",
                 FirstName = "Дарья",
                 LastName = "Задушевная",
                 Subject = "Психология",
-                Role = User.Roles.Lecturer
+                Role = UserRoles.Lecturer
             };
             repository.SaveUser(user);
 
@@ -65,13 +65,13 @@ namespace StudentsWebsite.WebUI.Helpers
                 RandomDataGenerator.RandomName(out firstName, out lastName);
                 subject = subjects[i];
 
-                user = new User(){
+                user = new DbUser(){
                     UserName = login,
                     Password = pass,
                     FirstName = firstName,
                     LastName = lastName,
                     Subject = subject,
-                    Role = User.Roles.Lecturer
+                    Role = UserRoles.Lecturer
                 };
 
                 repository.SaveUser(user);
@@ -85,13 +85,13 @@ namespace StudentsWebsite.WebUI.Helpers
                 RandomDataGenerator.RandomName(out firstName, out lastName);
                
 
-                user = new User()
+                user = new DbUser()
                 {
                     UserName = login,
                     Password = pass,
                     FirstName = firstName,
                     LastName = lastName,                    
-                    Role = User.Roles.Student
+                    Role = UserRoles.Student
                 };
 
                 repository.SaveUser(user);
@@ -99,8 +99,8 @@ namespace StudentsWebsite.WebUI.Helpers
 
             //Генерация посещений студентов и оценок
             
-            User[] students = repository.Users.Where(u => u.Role == User.Roles.Student).ToArray();
-            User[] lecturers = repository.Users.Where(u => u.Role == User.Roles.Lecturer).ToArray();
+            DbUser[] students = repository.Users.Where(u => u.Role == UserRoles.Student).ToArray();
+            DbUser[] lecturers = repository.Users.Where(u => u.Role == UserRoles.Lecturer).ToArray();
             Random rnd = new Random();
             int count, index;
             Rating rating;

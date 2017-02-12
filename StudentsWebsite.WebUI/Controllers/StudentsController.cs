@@ -12,16 +12,16 @@ namespace StudentsWebsite.WebUI.Controllers
 {
     public class StudentsController : Controller
     {
-        IDataRepository dataRepository;
+        IDataRepositoryOld dataRepository;
 
-        public StudentsController(IDataRepository dataRepository)
+        public StudentsController(IDataRepositoryOld dataRepository)
         {
             this.dataRepository = dataRepository;
         }
        
         public ActionResult Index()
         {
-            var students = dataRepository.Users.Where(u => u.Role == Domain.Entities.User.Roles.Student).ToArray();
+            var students = dataRepository.Users.Where(u => u.Role == UserRoles.Student).ToArray();
             var models = students.Select(s => {
                 var ratings = dataRepository.Ratings.Where(r => r.Student_UserName == s.UserName);
                 var subjectsCount = ratings.Count(r => r.Rate >= 0);
@@ -42,9 +42,9 @@ namespace StudentsWebsite.WebUI.Controllers
         {
             Models.StudentEditViewModel editViewModel = new Models.StudentEditViewModel();
          
-            User user = null;
+            DbUser user = null;
             if (userName != "")
-                user = dataRepository.Users.FirstOrDefault(u => u.UserName == userName && u.Role == Domain.Entities.User.Roles.Student);
+                user = dataRepository.Users.FirstOrDefault(u => u.UserName == userName && u.Role == UserRoles.Student);
 
             if (user == null)
                 return RedirectToAction("Error");
@@ -99,10 +99,10 @@ namespace StudentsWebsite.WebUI.Controllers
         {
             var editViewModel = new Models.StudentEditViewModel();
 
-            User user = null;
+            DbUser user = null;
             if (userName != "")
             {
-                user = dataRepository.Users.FirstOrDefault(u => u.UserName == userName && u.Role == Domain.Entities.User.Roles.Student);
+                user = dataRepository.Users.FirstOrDefault(u => u.UserName == userName && u.Role == UserRoles.Student);
                 ViewBag.ActionString = "Сохранить";
             }
 
@@ -110,13 +110,13 @@ namespace StudentsWebsite.WebUI.Controllers
             {                
                 string firstName, lastName;
                 Helpers.RandomDataGenerator.RandomName(out firstName, out lastName);
-                user = new User
+                user = new DbUser
                 {
 
                     UserName = "",
                     FirstName = firstName,
                     LastName = lastName,
-                    Role = Domain.Entities.User.Roles.Student,
+                    Role = UserRoles.Student,
                 };
 
                 ViewBag.ActionString = "Добавить";
@@ -124,7 +124,7 @@ namespace StudentsWebsite.WebUI.Controllers
             editViewModel.Student = user;
 
             var ratings = dataRepository.Ratings.Where(r => r.Student_UserName == user.UserName);
-            var lecturers = dataRepository.Users.Where(u => u.Role == Domain.Entities.User.Roles.Lecturer);
+            var lecturers = dataRepository.Users.Where(u => u.Role == UserRoles.Lecturer);
             editViewModel.Lecturers = lecturers.Select(l =>
             {
                 var rating = ratings.FirstOrDefault(r => r.Lecturer_UserName == l.UserName);
@@ -148,7 +148,7 @@ namespace StudentsWebsite.WebUI.Controllers
             if (ModelState.IsValid)
             {
                 var user = editViewModel.Student;
-                user.Role = Domain.Entities.User.Roles.Student;
+                user.Role = UserRoles.Student;
                 dataRepository.SaveUser(user);
 
                 //Достаем список преподавателей-оценок (Ratings) из списка выбранных преподавателей 

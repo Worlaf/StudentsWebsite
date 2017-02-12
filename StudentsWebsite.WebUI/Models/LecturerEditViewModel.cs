@@ -18,7 +18,7 @@ namespace StudentsWebsite.WebUI.Models
         }
         
         public string LecturerUserName { get; set; }
-        public User Lecturer { get; set; }
+        public DbUser Lecturer { get; set; }
         public StudentSelection[] Students { get; set; }
     }
 }

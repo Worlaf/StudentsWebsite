@@ -10,8 +10,8 @@ namespace StudentsWebsite.WebUI.Controllers
 {
     public class ReportController : Controller
     {
-        IDataRepository dataRepository;
-        public ReportController(IDataRepository dataRepository)
+        IDataRepositoryOld dataRepository;
+        public ReportController(IDataRepositoryOld dataRepository)
         {
             this.dataRepository = dataRepository;
         }
@@ -24,7 +24,7 @@ namespace StudentsWebsite.WebUI.Controllers
         [Authorize(Roles = "Dean")]
         public ActionResult TopStudents()
         {
-            var students = dataRepository.Users.Where(u => u.Role == Domain.Entities.User.Roles.Student).ToArray();           
+            var students = dataRepository.Users.Where(u => u.Role == UserRoles.Student).ToArray();           
             double totalAverage = 0;
             var models = students
                 .Select(s =>
@@ -52,8 +52,8 @@ namespace StudentsWebsite.WebUI.Controllers
         [Authorize(Roles = "Dean")]
         public ActionResult PopularLecturers()
         {
-            var lecturers = dataRepository.Users.Where(u => u.Role == Domain.Entities.User.Roles.Lecturer).ToArray();
-            var allStudentsCount = dataRepository.Users.Count(u => u.Role == Domain.Entities.User.Roles.Student);
+            var lecturers = dataRepository.Users.Where(u => u.Role == UserRoles.Lecturer).ToArray();
+            var allStudentsCount = dataRepository.Users.Count(u => u.Role == UserRoles.Student);
             var models = lecturers
                 .Where(l => dataRepository.Ratings.Count(r => r.Lecturer_UserName == l.UserName) == allStudentsCount)
                 .Select(l => new Models.LecturerViewModel
@@ -70,7 +70,7 @@ namespace StudentsWebsite.WebUI.Controllers
         [Authorize(Roles = "Dean")]
         public ActionResult UnpopularLecturers()
         {
-            var lecturers = dataRepository.Users.Where(u => u.Role == Domain.Entities.User.Roles.Lecturer).ToArray();   
+            var lecturers = dataRepository.Users.Where(u => u.Role == UserRoles.Lecturer).ToArray();   
             var minimum = lecturers.Min(l => (decimal?)dataRepository.Ratings.Count(r => r.Lecturer_UserName == l.UserName)) + 1;
             var models = lecturers
                 .Select(l => new Models.LecturerViewModel

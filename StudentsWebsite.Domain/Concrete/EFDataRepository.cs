@@ -8,21 +8,21 @@ using StudentsWebsite.Domain.Abstract;
 
 namespace StudentsWebsite.Domain.Concrete
 {
-    public class EFDataRepository : IDataRepository
+    public class EFDataRepository : IDataRepositoryOld
     {
-        protected EFDBContext context = new EFDBContext();
+        protected EfdbContext context = new EfdbContext();
 
         public IEnumerable<Rating> Ratings
         {
             get { return context.Ratings; }
         }
 
-        public IEnumerable<User> Users
+        public IEnumerable<DbUser> Users
         {
             get { return context.Users; }
         }
 
-        public void SaveUser(User user)
+        public void SaveUser(DbUser user)
         {
             if (!UserNameExists(user.UserName))
                 context.Users.Add(user);
@@ -46,7 +46,7 @@ namespace StudentsWebsite.Domain.Concrete
             return GetUser(username) != null;
         }
 
-        public User GetUser(string username)
+        public DbUser GetUser(string username)
         {
             return context.Users.Find(username);
         }

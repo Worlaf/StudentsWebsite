@@ -9,16 +9,16 @@ namespace StudentsWebsite.WebUI.Infrastructure.Concrete
 {
     public class DBAuthProvider : Infrastructure.Abstract.IAuthProvider
     {
-        private Domain.Abstract.IDataRepository dataRepository;
+        private Domain.Abstract.IDataRepositoryOld dataRepository;
 
-        public DBAuthProvider(Domain.Abstract.IDataRepository dataRepository)
+        public DBAuthProvider(Domain.Abstract.IDataRepositoryOld dataRepository)
         {
             this.dataRepository = dataRepository;
         }
 
         public bool ValidateUser(string username, string password)
         {
-            User user = dataRepository.Users.FirstOrDefault (u => u.UserName == username && u.Password == password);
+            DbUser user = dataRepository.Users.FirstOrDefault (u => u.UserName == username && u.Password == password);
             return user != null;
         }
         public bool Login(string username, string password)

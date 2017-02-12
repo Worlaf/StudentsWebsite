@@ -6,13 +6,13 @@ using StudentsWebsite.Domain.Entities;
 
 namespace StudentsWebsite.Domain.Abstract
 {
-    public interface IDataRepository
+    public interface IDataRepositoryOld
     {
         IEnumerable<Rating> Ratings { get;  }
-        IEnumerable<User> Users { get; }
-        void SaveUser(User user);
+        IEnumerable<DbUser> Users { get; }
+        void SaveUser(DbUser user);
         bool UserNameExists(string username);
-        User GetUser(string username);
+        DbUser GetUser(string username);
         void SaveRatings(IEnumerable<Rating> ratings);
         void SaveRatings(IEnumerable<Rating> ratings, string forUserName);
     }

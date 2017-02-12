@@ -8,6 +8,7 @@ using System.Web.Security;
 using Ninject;
 
 using System.Diagnostics;
+using StudentsWebsite.Domain.Entities;
 
 namespace StudentsWebsite.WebUI
 {
@@ -23,7 +24,7 @@ namespace StudentsWebsite.WebUI
         public void Application_AcquireRequestState(object sender, EventArgs e)
         {
            
-            Domain.Abstract.IDataRepository dataRepository = DependencyResolver.Current.GetService<IKernel>().Get<Domain.Abstract.IDataRepository>();
+            Domain.Abstract.IDataRepositoryOld dataRepository = DependencyResolver.Current.GetService<IKernel>().Get<Domain.Abstract.IDataRepositoryOld>();
             if (dataRepository == null)
             {
                 return;
@@ -31,23 +32,23 @@ namespace StudentsWebsite.WebUI
 
             if (Application != null)
             {
-                Application["TotalStudents"] = dataRepository.Users.Count(u => u.Role == Domain.Entities.User.Roles.Student);
-                Application["TotalLecturers"] = dataRepository.Users.Count(u => u.Role == Domain.Entities.User.Roles.Lecturer);
+                Application["TotalStudents"] = dataRepository.Users.Count(u => u.Role == UserRoles.Student);
+                Application["TotalLecturers"] = dataRepository.Users.Count(u => u.Role == UserRoles.Lecturer);
             }
             if (Context.User != null && dataRepository.GetUser(User.Identity.Name) != null &&
                 Context.Session != null && Session["UserData"] == null )
             {
-                Domain.Entities.User user = dataRepository.GetUser(User.Identity.Name);
+                Domain.Entities.DbUser user = dataRepository.GetUser(User.Identity.Name);
                 Session["UserData"] = user;
                 Session["FullName"] = user.FirstName + " " + user.LastName;
                 Session["LastPage"] = Context.Request.Url;
                 switch (user.Role)
                 {
-                    case Domain.Entities.User.Roles.Student:
+                    case UserRoles.Student:
                         Session["Group"] = "Студенты"; break;
-                    case Domain.Entities.User.Roles.Lecturer:
+                    case UserRoles.Lecturer:
                         Session["Group"] = "Преподаватели"; break;
-                    case Domain.Entities.User.Roles.Dean:
+                    case UserRoles.Dean:
                         Session["Group"] = "Деканат"; break;
                 }
             }
@@ -55,10 +56,10 @@ namespace StudentsWebsite.WebUI
        
         protected void Application_AuthenticateRequest(object sender, EventArgs e)
         {
-            Domain.Abstract.IDataRepository dataRepository = DependencyResolver.Current.GetService<IKernel>().Get<Domain.Abstract.IDataRepository>();
+            Domain.Abstract.IDataRepositoryOld dataRepository = DependencyResolver.Current.GetService<IKernel>().Get<Domain.Abstract.IDataRepositoryOld>();
             if (Context.User != null && dataRepository.GetUser(User.Identity.Name) != null)
             {
-                Domain.Entities.User user = dataRepository.GetUser(User.Identity.Name);
+                Domain.Entities.DbUser user = dataRepository.GetUser(User.Identity.Name);
                 Debug.Print("AuthenticateRequest User = {0}", User.Identity.Name);               
                 Context.User = new System.Security.Principal.GenericPrincipal(User.Identity, new string[] { user.Role.ToString() }); 
 

@@ -1,4 +1,5 @@
-﻿@using StudentsWebsite.WebUI.Utility
+﻿@using StudentsWebsite.Domain.Entities
+@using StudentsWebsite.WebUI.Utility
 @model StudentsWebsite.WebUI.Models.StudentEditViewModel
 
 @{
@@ -11,93 +12,89 @@
 {
     <h2>
         @Model.Student.FirstName @Model.Student.LastName
-        @if (Context.User.IsDean() || Context.User.IsLecturer())
+        @if (Context.User.CheckRole(UserRoles.Dean, UserRoles.Lecturer))
         {
             <a class="btn btn-default" href="~/Students/Edit?userName=@Model.Student.UserName">
                 <span class="glyphicon glyphicon-pencil"></span>Редактировать
             </a>
         }
     </h2>
-    @Html.HiddenFor(m => m.StudentUserName);
-    <br />
+    @Html.HiddenFor(m => m.StudentUserName)
+    ;
+    <br/>
 
-     if (!ViewData.ModelState.IsValid)
+    if (!ViewData.ModelState.IsValid)
     {
         <div class="alert alert-danger">
             @Html.ValidationSummary()
         </div>
     }
-    <br />
+    <br/>
     <h2>Предметы</h2>
 
     <table class="table display">
         <thead>
-            <tr>
-                <th>Предмет</th>
-                <th>Имя</th>
-                <th>Оценка</th>
-            </tr>
+        <tr>
+            <th>Предмет</th>
+            <th>Имя</th>
+            <th>Оценка</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach (var lecturer in Model.Lecturers)
-            {
-                <tr>
-                    <td>
-                        @Html.HiddenFor(m => lecturer.LecturerSubject)
-                        @lecturer.LecturerSubject
-                    </td>
-                    <td>
-                        @Html.HiddenFor(m => lecturer.LecturerUserName)
-                        @if (Context.User.IsDean())
-                        {
-                            <a class="btn btn-default btn-xs" href="~/Lecturers/Edit?userName=@lecturer.LecturerUserName">
-                                <span class="glyphicon glyphicon-pencil"></span>
-                            </a>
-                        }
-                        @if ( Context.User.IsDean() || Context.User.IsLecturer())
-                        {
-                            <a class="btn btn-default btn-xs" href="~/Lecturers/Card?userName=@lecturer.LecturerUserName">
-                                <span class="glyphicon glyphicon-user"></span>
-                            </a>
-                        }
-                        @lecturer.LecturerFullName
-                    </td>
+        @foreach (var lecturer in Model.Lecturers)
+        {
+            <tr>
+                <td>
+                    @Html.HiddenFor(m => lecturer.LecturerSubject)
+                    @lecturer.LecturerSubject
+                </td>
+                <td>
+                    @Html.HiddenFor(m => lecturer.LecturerUserName)
+                    @if (Context.User.IsDean())
+                    {
+                        <a class="btn btn-default btn-xs" href="~/Lecturers/Edit?userName=@lecturer.LecturerUserName">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+                    }
+                    @if (Context.User.CheckRole(UserRoles.Dean, UserRoles.Lecturer))
+                    {
+                        <a class="btn btn-default btn-xs" href="~/Lecturers/Card?userName=@lecturer.LecturerUserName">
+                            <span class="glyphicon glyphicon-user"></span>
+                        </a>
+                    }
+                    @lecturer.LecturerFullName
+                </td>
 
-                    <td>
-                        @Html.HiddenFor(m => lecturer.Rating)
-                        @if (lecturer.LecturerUserName == Context.User.Identity.Name || Context.User.IsDean())
-                        {
-                            <a class="btn btn-default btn-xs rating-edit">
-                                <span class="glyphicon glyphicon-pencil"></span>
-                            </a>
-                        }
-                        @if (lecturer.Rating >= 0)
-                        {
-                            <span>@lecturer.Rating</span>
-                        }
-                        else
-                        {
-                            <span>Нет оценки</span>
-                        }
-                    </td>
-                </tr>
-            }
+                <td>
+                    @Html.HiddenFor(m => lecturer.Rating)
+                    @if (lecturer.LecturerUserName == Context.User.Identity.Name || Context.User.IsDean())
+                    {
+                        <a class="btn btn-default btn-xs rating-edit">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+                    }
+                    @if (lecturer.Rating >= 0)
+                    {
+                        <span>@lecturer.Rating</span>
+                    }
+                    else
+                    {
+                        <span>Нет оценки</span>
+                    }
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
-    if (Model.Lecturers.Count(l => l.LecturerUserName ==  Context.User.Identity.Name)>= 1|| Context.User.IsDean())
+    if (Model.Lecturers.Count(l => l.LecturerUserName == Context.User.Identity.Name) >= 1 || Context.User.IsDean())
     {
-        <input type="submit" value="Сохранить оценки" class="btn btn-primary" />
+        <input type="submit" value="Сохранить оценки" class="btn btn-primary"/>
     }
-   
-
-
 }
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         // $('#lecturers').DataTable();
         $(".rating-edit").ratingEditor();
     });
-</script>
-
-
+</script>s

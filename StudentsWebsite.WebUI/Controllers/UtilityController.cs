@@ -10,8 +10,8 @@ namespace StudentsWebsite.WebUI.Controllers
 {
     public class UtilityController : Controller
     {
-        IDataRepository dataRepository;
-        public UtilityController(IDataRepository dataRepository)
+        IDataRepositoryOld dataRepository;
+        public UtilityController(IDataRepositoryOld dataRepository)
         {
             this.dataRepository = dataRepository;
         }

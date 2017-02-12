@@ -1,4 +1,5 @@
 ﻿@using StudentsWebsite.WebUI.Utility
+@using StudentsWebsite.Domain.Entities
 @model StudentsWebsite.WebUI.Models.StudentViewModel[]
 
 @{
@@ -7,7 +8,7 @@
     Layout = "~/Views/_MainLayout.cshtml";
 }
 
-@if (Context.User.IsDean() || Context.User.IsLecturer())
+@if (Context.User.CheckRole(UserRoles.Dean, UserRoles.Lecturer ))
 {
     <a class="btn btn-default" href="~/Students/Edit">
         <span class="glyphicon glyphicon-plus-sign">Добавить студента</span>
@@ -29,13 +30,13 @@
             <tr>
                 <td>@i</td>
                 <td>
-                    @if (Context.User.IsDean() || Context.User.IsLecturer())
+                    @if (Context.User.CheckRole(UserRoles.Dean, UserRoles.Lecturer))
                     {
                         <a class="btn btn-default btn-xs" href="~/Students/Edit?userName=@u.UserName">
                             <span class="glyphicon glyphicon-pencil"></span>
                         </a>
                     }
-                    @if (Context.User.IsStudent() || Context.User.IsDean() || Context.User.IsLecturer())
+                    @if (Context.User.CheckRole(UserRoles.Dean, UserRoles.Lecturer, UserRoles.Student))
                     {
                         <a class="btn btn-default btn-xs" href="~/Students/Card?userName=@u.UserName">
                             <span class="glyphicon glyphicon-user"></span>

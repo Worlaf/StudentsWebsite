@@ -48,10 +48,19 @@
   <ItemGroup>
     <Compile Include="Abstract\IDataRepository.cs" />
     <Compile Include="Concrete\EFDataRepository.cs" />
-    <Compile Include="Concrete\EFDBContext.cs" />
+    <Compile Include="Repositories\DataRepositoryBase.cs" />
+    <Compile Include="DBContext.cs" />
+    <Compile Include="Entities\Lecturer.cs" />
     <Compile Include="Entities\Rating.cs" />
-    <Compile Include="Entities\User.cs" />
+    <Compile Include="Entities\Student.cs" />
+    <Compile Include="Entities\TEntity.cs" />
+    <Compile Include="Entities\DbUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\LecturerRepository.cs" />
+    <Compile Include="Repositories\RatingRepository.cs" />
+    <Compile Include="Repositories\StudentRepository.cs" />
+    <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="DbUserExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

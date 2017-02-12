@@ -15,7 +15,7 @@ namespace StudentsWebsite.WebUI.Models
         public int Rating { get; set; }
         public bool Selected { get; set; }
 
-        public PossibleRatingViewModel(User student, User lecturer, int rating, bool selected)
+        public PossibleRatingViewModel(DbUser student, DbUser lecturer, int rating, bool selected)
         {
             StudentName = student.UserName;
             StudentFullName = student.FirstName + " " + student.LastName;

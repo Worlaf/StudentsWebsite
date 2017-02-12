@@ -35,7 +35,7 @@ namespace StudentsWebsite.WebUI.Infrastructure
 
         private void AddBindings()
         {
-            kernel.Bind<IDataRepository>().To<EFDataRepository>();
+            kernel.Bind<IDataRepositoryOld>().To<EFDataRepository>();
             kernel.Bind<IAuthProvider>().To<DBAuthProvider>();
         }
     }
