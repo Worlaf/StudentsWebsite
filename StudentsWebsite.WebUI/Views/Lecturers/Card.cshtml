@@ -13,7 +13,7 @@
         @Model.Lecturer.FirstName @Model.Lecturer.LastName, @Model.Lecturer.Subject 
         @if (Context.User.IsInRole("Dean"))
         {
-            <a class="btn btn-default" href="~/Lecturers/Edit?userName=@Model.Lecturer.UserName">
+            <a class="btn btn-default" href="~/Lecturers/Edit?userName=@Model.Lecturer.Email">
                 <span class="glyphicon glyphicon-pencil"></span>Редактировать
             </a>
         }
@@ -60,7 +60,7 @@
 
                     <td>
                         @Html.HiddenFor(m => student.Rating)
-                        @if (Model.Lecturer.UserName == Context.User.Identity.Name || Context.User.IsDean())
+                        @if (Model.Lecturer.Email == Context.User.Identity.Name || Context.User.IsDean())
                         {
                             <a class="btn btn-default btn-xs rating-edit">
                                 <span class="glyphicon glyphicon-pencil"></span>
@@ -79,7 +79,7 @@
             }
         </tbody>
     </table>
-    if (Model.Lecturer.UserName == Context.User.Identity.Name || Context.User.IsInRole("Dean"))
+    if (Model.Lecturer.Email == Context.User.Identity.Name || Context.User.IsInRole("Dean"))
     {
         <input type="submit" value="Сохранить оценки" class="btn btn-primary" />
     }

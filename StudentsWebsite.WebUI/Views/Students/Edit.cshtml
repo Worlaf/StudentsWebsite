@@ -17,13 +17,13 @@
         </div>
     }
     <label>Логин</label>
-    if (Model.Student.UserName == "")
+    if (Model.Student.Email == "")
     {
-        @Html.TextBoxFor(m => m.Student.UserName, new { @class = "form-control" });
+        @Html.TextBoxFor(m => m.Student.Email, new { @class = "form-control" });
     }
     else
     {
-        @Html.TextBoxFor(m => m.Student.UserName, new { @class = "form-control", @readonly = "readonly" });
+        @Html.TextBoxFor(m => m.Student.Email, new { @class = "form-control", @readonly = "readonly" });
     }
     <label>Пароль</label>
     @Html.TextBoxFor(m => m.Student.Password ,new { @class = "form-control" });

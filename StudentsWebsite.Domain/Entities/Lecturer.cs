@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace StudentsWebsite.Domain.Entities
+namespace StudentsWebsite.Data.Entities
 {
-    public class Lecturer : TEntity
+    public class Lecturer : BdEntity
     {
-        public uint UserId { get; set; }
+        public Guid UserId { get; set; }
+        [ForeignKey(nameof(UserId))]
         public DbUser User { get; set; }
-
         public string Subject { get; set; }
-
+        public int StudentsCount { get; set; }
         public IEnumerable<Student> Students { get; set; }
     }
 }

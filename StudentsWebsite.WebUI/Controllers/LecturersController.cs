@@ -4,8 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.WebPages;
-using StudentsWebsite.Domain.Abstract;
-using StudentsWebsite.Domain.Entities;
+using StudentsWebsite.Data.Abstract;
+using StudentsWebsite.Data.Entities;
 using StudentsWebsite.WebUI.Utility;
 
 
@@ -24,10 +24,10 @@ namespace StudentsWebsite.WebUI.Controllers
             var lecturers = DataRepository.Users.Where(u => u.Role == UserRoles.Lecturer).ToArray();
             var models = lecturers.Select(l => new Models.LecturerViewModel
             {
-                UserName = l.UserName,
+                UserName = l.Email,
                 FullName = l.FirstName + l.LastName,
                 Subject = l.Subject,
-                StudentsCount = DataRepository.Ratings.Count(r => r.Lecturer_UserName == l.UserName)
+                StudentsCount = DataRepository.Ratings.Count(r => r.Lecturer_UserName == l.Email)
             });
            
             return View(models);
@@ -40,7 +40,7 @@ namespace StudentsWebsite.WebUI.Controllers
             DbUser user = null;
             if (userName != "")
             {
-                user = DataRepository.Users.FirstOrDefault(u => u.UserName == userName && u.Role == UserRoles.Lecturer);
+                user = DataRepository.Users.FirstOrDefault(u => u.Email == userName && u.Role == UserRoles.Lecturer);
                 ViewBag.ActionString = "Сохранить";
             }
 
@@ -48,17 +48,17 @@ namespace StudentsWebsite.WebUI.Controllers
                 return RedirectToAction("Error");
 
             viewModel.Lecturer = user;
-            viewModel.LecturerUserName = user.UserName;
+            viewModel.LecturerUserName = user.Email;
 
-            var ratings = DataRepository.Ratings.Where(r => r.Lecturer_UserName == user.UserName).ToArray();
+            var ratings = DataRepository.Ratings.Where(r => r.Lecturer_UserName == user.Email).ToArray();
             viewModel.Students = ratings.Select(r =>
             {
                 var student = DataRepository.GetUser(r.Student_UserName);
                 return new Models.LecturerEditViewModel.StudentSelection
                 {
-                    StudentUserName = student.UserName,
+                    StudentUserName = student.Email,
                     StudentFullName = student.FirstName + " " + student.LastName,
-                    Rating = r.Rate,
+                    Rating = r.Rate.Value,
                     Selected = true
                 };
             }).ToArray();
@@ -79,7 +79,7 @@ namespace StudentsWebsite.WebUI.Controllers
                     var student = DataRepository.GetUser(s.StudentUserName);
                     return new Rating
                     {
-                        Student_UserName = student.UserName,
+                        Student_UserName = student.Email,
                         Lecturer_UserName = viewModel.LecturerUserName,
                         Rate = s.Rating
                     };
@@ -92,7 +92,7 @@ namespace StudentsWebsite.WebUI.Controllers
             else
             {
                 // Что-то не так со значениями данных
-                return Card(viewModel.LecturerUserName ?? viewModel.Lecturer.UserName);
+                return Card(viewModel.LecturerUserName ?? viewModel.Lecturer.Email);
             }
         }
 
@@ -103,7 +103,7 @@ namespace StudentsWebsite.WebUI.Controllers
             DbUser user = null;
             if (userName != "")
             {
-                user = DataRepository.Users.FirstOrDefault(u => u.UserName == userName && u.Role == UserRoles.Lecturer);
+                user = DataRepository.Users.FirstOrDefault(u => u.Email == userName && u.Role == UserRoles.Lecturer);
                 ViewBag.ActionString = "Сохранить";
             }
 
@@ -115,7 +115,7 @@ namespace StudentsWebsite.WebUI.Controllers
                 user = new DbUser
                 {
                     
-                    UserName = "",
+                    Email = "",
                     FirstName = firstName,
                     LastName = lastName,
                     Role = UserRoles.Lecturer,
@@ -124,16 +124,16 @@ namespace StudentsWebsite.WebUI.Controllers
             }
             viewModel.Lecturer = user;
 
-            var ratings = DataRepository.Ratings.Where(r => r.Lecturer_UserName == user.UserName).ToArray();
+            var ratings = DataRepository.Ratings.Where(r => r.Lecturer_UserName == user.Email).ToArray();
             var students = DataRepository.Users.Where(u => u.Role == UserRoles.Student).ToArray();
             Models.LecturerEditViewModel.StudentSelection[] studentSelections = new Models.LecturerEditViewModel.StudentSelection[students.Length];
             var studentsSelection = students.Select(s =>
             {
-                var rating = ratings.FirstOrDefault(r => r.Student_UserName == s.UserName);
+                var rating = ratings.FirstOrDefault(r => r.Student_UserName == s.Email);
                 return new Models.LecturerEditViewModel.StudentSelection{
-                    StudentUserName = s.UserName,
+                    StudentUserName = s.Email,
                     StudentFullName = s.FirstName + " " + s.LastName,
-                    Rating = rating != null ? rating.Rate : -1,
+                    Rating = rating != null ? rating.Rate.Value : -1,
                     Selected = rating != null
                 };
             });            
@@ -157,17 +157,17 @@ namespace StudentsWebsite.WebUI.Controllers
                     .Select(s => new Rating
                     {
                         Student_UserName = s.StudentUserName,
-                        Lecturer_UserName = user.UserName,
+                        Lecturer_UserName = user.Email,
                         Rate = s.Rating
                     });                
-                DataRepository.SaveRatings(newRatings, user.UserName);
+                DataRepository.SaveRatings(newRatings, user.Email);
 
-                return RedirectToAction("Card", new { userName = viewModel.Lecturer.UserName });
+                return RedirectToAction("Card", new { userName = viewModel.Lecturer.Email });
             }
             else
             {
                 // Что-то не так со значениями данных
-                return Edit(viewModel.LecturerUserName ?? viewModel.Lecturer.UserName);
+                return Edit(viewModel.LecturerUserName ?? viewModel.Lecturer.Email);
             }            
         }
 	}

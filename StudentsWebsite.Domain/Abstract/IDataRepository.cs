@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using StudentsWebsite.Domain.Entities;
+using StudentsWebsite.Data.Entities;
 
-namespace StudentsWebsite.Domain.Abstract
+namespace StudentsWebsite.Data.Abstract
 {
     public interface IDataRepositoryOld
     {

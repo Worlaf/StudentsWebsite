@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using StudentsWebsite.Domain.Entities;
+using StudentsWebsite.Data.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace StudentsWebsite.WebUI.Models

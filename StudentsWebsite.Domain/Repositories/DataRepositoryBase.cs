@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using StudentsWebsite.Domain.Entities;
+using StudentsWebsite.Data.Entities;
 
-namespace StudentsWebsite.Domain.Repositories
+namespace StudentsWebsite.Data.Repositories
 {
     public interface IDataRepository<TEntity>
     {
@@ -14,14 +14,24 @@ namespace StudentsWebsite.Domain.Repositories
 
         IQueryable<TResult> GetMany<TResult>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TResult>> selector);
 
+        TEntity Single(Expression<Func<TEntity, bool>> where);
+        TResult Single<TResult>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TResult>> selector);
+        TEntity First(Expression<Func<TEntity, bool>> where);
+        TResult First<TResult>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TResult>> selector);
+
         void Save(TEntity entity);
     }
-    public abstract class DataRepositoryBase<TEntity> : IDataRepository<TEntity> where TEntity : Entities.TEntity
+    public abstract class DataRepositoryBase<TEntity> : IDataRepository<TEntity> where TEntity : Entities.BdEntity
     {
-        protected DbContext<TEntity> DbContext = new DbContext<TEntity>();
-        public IQueryable<TEntity> GetAll()
+        protected EfdbContext context = new EfdbContext();
+        public virtual IQueryable<TEntity> GetAll()
         {
-            return DbContext.DbSet;
+            return GetDbSet();
+        }
+
+        public System.Data.Entity.DbSet<TEntity> GetDbSet()
+        {
+            return context.GetDbSet<TEntity>();
         }
 
         public IQueryable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector)
@@ -38,16 +48,36 @@ namespace StudentsWebsite.Domain.Repositories
         {
             return GetAll().Where(where).Select(selector);
         }
+
+        public TEntity Single(Expression<Func<TEntity, bool>> where)
+        {
+            return GetAll().Single(where);
+        }
+
+        public TResult Single<TResult>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TResult>> selector)
+        {
+            return GetMany(where, selector).Single();
+        }
+
+        public TEntity First(Expression<Func<TEntity, bool>> where)
+        {
+            return GetAll().First(where);
+        }
+
+        public TResult First<TResult>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TResult>> selector)
+        {
+            return GetMany(where, selector).First();
+        }
         public void Save(TEntity entity)
         {
-            var entry = DbContext.DbSet.SingleOrDefault(e => e.Id == entity.Id);
+            var entry = GetDbSet().SingleOrDefault(e => e.Id == entity.Id);
 
             if (entry == null)
-                DbContext.DbSet.Add(entity);
+                GetDbSet().Add(entity);
             else
                 entry = entity;
 
-            DbContext.SaveChanges();
+            context.SaveChanges();
         }
     }
 }

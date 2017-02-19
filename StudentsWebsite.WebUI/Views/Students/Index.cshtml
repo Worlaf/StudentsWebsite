@@ -1,6 +1,7 @@
 ﻿@using StudentsWebsite.WebUI.Utility
-@using StudentsWebsite.Domain.Entities
-@model StudentsWebsite.WebUI.Models.StudentViewModel[]
+@using StudentsWebsite.Data
+@using StudentsWebsite.Data.Entities
+@model StudentsWebsite.WebUI.Models.Students.Index.ViewModel
 
 @{
     ViewBag.Title = "Студенты";
@@ -8,7 +9,7 @@
     Layout = "~/Views/_MainLayout.cshtml";
 }
 
-@if (Context.User.CheckRole(UserRoles.Dean, UserRoles.Lecturer ))
+@if (Context.User.CheckRoles(UserRoles.Dean, UserRoles.Lecturer ))
 {
     <a class="btn btn-default" href="~/Students/Edit">
         <span class="glyphicon glyphicon-plus-sign">Добавить студента</span>
@@ -25,30 +26,30 @@
     </thead>
     <tbody>
         @{int i = 1;}
-        @foreach (var u in Model)
+        @foreach (var student in Model.Students)
         {
             <tr>
                 <td>@i</td>
                 <td>
-                    @if (Context.User.CheckRole(UserRoles.Dean, UserRoles.Lecturer))
+                    @if (Context.User.CheckRoles(UserRoles.Dean, UserRoles.Lecturer))
                     {
-                        <a class="btn btn-default btn-xs" href="~/Students/Edit?userName=@u.UserName">
+                        <a class="btn btn-default btn-xs" href="~/Students/Edit?userName=@student.User.Email">
                             <span class="glyphicon glyphicon-pencil"></span>
                         </a>
                     }
-                    @if (Context.User.CheckRole(UserRoles.Dean, UserRoles.Lecturer, UserRoles.Student))
+                    @if (Context.User.CheckRoles(UserRoles.Dean, UserRoles.Lecturer, UserRoles.Student))
                     {
-                        <a class="btn btn-default btn-xs" href="~/Students/Card?userName=@u.UserName">
+                        <a class="btn btn-default btn-xs" href="~/Students/Card?userName=@student.User.Email">
                             <span class="glyphicon glyphicon-user"></span>
                         </a>
                     }
-                    @u.FullName
+                    @student.User.FullName()
                 </td>
-                <td>@u.SubjectCount</td>
+                <td>@student.SubjectsCount</td>
                 <td>
-                    @if (u.AverageRating >= 0)
+                    @if (student.AverageRating >= 0)
                     {
-                        @u.AverageRating
+                        @student.AverageRating
                     }
                     else
                     {

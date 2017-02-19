@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentsWebsite.WebUI", "StudentsWebsite.WebUI\StudentsWebsite.WebUI.csproj", "{78E28C6A-C416-4DC4-81DC-EC2CC9F85C8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentsWebsite.Domain", "StudentsWebsite.Domain\StudentsWebsite.Domain.csproj", "{9C0F746A-6C00-40C9-81A0-BA5296489773}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentsWebsite.Data", "StudentsWebsite.Domain\StudentsWebsite.Data.csproj", "{9C0F746A-6C00-40C9-81A0-BA5296489773}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentsWebsite.NUnitTests", "StudentsWebsite.NUnitTests\StudentsWebsite.NUnitTests.csproj", "{067456C0-086C-46A8-B37F-1405717B7BFC}"
 EndProject

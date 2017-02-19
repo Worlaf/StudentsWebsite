@@ -1,0 +1,27 @@
+diff a/StudentsWebsite.Domain/Concrete/EFDataRepository.cs b/StudentsWebsite.Domain/Concrete/EFDataRepository.cs	(rejected hunks)
+@@ -8,21 +8,21 @@
+ 
+ namespace StudentsWebsite.Domain.Concrete
+ {
+-    public class EFDataRepository : IDataRepository
++    public class EFDataRepository : IDataRepositoryOld
+     {
+-        protected EFDBContext context = new EFDBContext();
++        protected EfdbContext context = new EfdbContext();
+ 
+         public IEnumerable<Rating> Ratings
+         {
+             get { return context.Ratings; }
+         }
+ 
+-        public IEnumerable<User> Users
++        public IEnumerable<DbUser> Users
+         {
+             get { return context.Users; }
+         }
+ 
+-        public void SaveUser(User user)
++        public void SaveUser(DbUser user)
+         {
+             if (!UserNameExists(user.UserName))
+                 context.Users.Add(user);

@@ -4,8 +4,10 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.WebPages;
-using StudentsWebsite.Domain.Abstract;
-using StudentsWebsite.Domain.Entities;
+using Ninject;
+using StudentsWebsite.Data.Abstract;
+using StudentsWebsite.Data.Entities;
+using StudentsWebsite.Data.Repositories;
 using StudentsWebsite.WebUI.Utility;
 
 namespace StudentsWebsite.WebUI.Controllers
@@ -14,6 +16,11 @@ namespace StudentsWebsite.WebUI.Controllers
     {
         IDataRepositoryOld dataRepository;
 
+        [Inject]
+        public IDbUserRepository DbUserRepository { get; set; }
+        [Inject]
+        public IStudentRepository StudentRepository { get; set; }
+
         public StudentsController(IDataRepositoryOld dataRepository)
         {
             this.dataRepository = dataRepository;
@@ -21,7 +28,7 @@ namespace StudentsWebsite.WebUI.Controllers
        
         public ActionResult Index()
         {
-            var students = dataRepository.Users.Where(u => u.Role == UserRoles.Student).ToArray();
+            /*var students = dataRepository.Users.Where(u => u.Role == UserRoles.Student).ToArray();
             var models = students.Select(s => {
                 var ratings = dataRepository.Ratings.Where(r => r.Student_UserName == s.UserName);
                 var subjectsCount = ratings.Count(r => r.Rate >= 0);
@@ -32,9 +39,14 @@ namespace StudentsWebsite.WebUI.Controllers
                     SubjectCount = subjectsCount,
                     AverageRating = subjectsCount > 0 ? (int)(ratings.Sum(r => r.Rate >= 0 ? (double)r.Rate : 0) / subjectsCount) : 0
                 };
-            });
+            });*/
 
-            return View(models);
+            var students = StudentRepository.GetAll().ToArray();
+
+            return View(new Models.Students.Index.ViewModel
+            {
+                Students = students
+            });
         }
 
         [Authorize(Roles = ("Lecturer, Dean, Student"))]
@@ -44,15 +56,15 @@ namespace StudentsWebsite.WebUI.Controllers
          
             DbUser user = null;
             if (userName != "")
-                user = dataRepository.Users.FirstOrDefault(u => u.UserName == userName && u.Role == UserRoles.Student);
+                user = dataRepository.Users.FirstOrDefault(u => u.Email == userName && u.Role == UserRoles.Student);
 
             if (user == null)
                 return RedirectToAction("Error");
 
             editViewModel.Student = user;
-            editViewModel.StudentUserName = user.UserName;
+            editViewModel.StudentUserName = user.Email;
            
-            var ratings = dataRepository.Ratings.Where(r => r.Student_UserName == user.UserName).ToArray();
+            var ratings = dataRepository.Ratings.Where(r => r.Student_UserName == user.Email).ToArray();
             var lecturerSelections = ratings.Select(r =>
             {
                 var lecturer = dataRepository.GetUser(r.Lecturer_UserName);
@@ -61,7 +73,7 @@ namespace StudentsWebsite.WebUI.Controllers
                     LecturerUserName = r.Lecturer_UserName,
                     LecturerFullName = lecturer.FirstName + " " + lecturer.LastName,
                     LecturerSubject = lecturer.Subject,
-                    Rating = r.Rate,
+                    Rating = r.Rate.Value,
                     Selected = true
                 };
             }).ToArray();
@@ -91,7 +103,7 @@ namespace StudentsWebsite.WebUI.Controllers
                 return RedirectToAction("Card", new { userName = viewModel.StudentUserName });
             }
             else
-                return Card(viewModel.StudentUserName ?? viewModel.Student.UserName);
+                return Card(viewModel.StudentUserName ?? viewModel.Student.Email);
         }
 
         [Authorize(Roles = ("Lecturer, Dean"))]
@@ -102,7 +114,7 @@ namespace StudentsWebsite.WebUI.Controllers
             DbUser user = null;
             if (userName != "")
             {
-                user = dataRepository.Users.FirstOrDefault(u => u.UserName == userName && u.Role == UserRoles.Student);
+                user = dataRepository.Users.FirstOrDefault(u => u.Email == userName && u.Role == UserRoles.Student);
                 ViewBag.ActionString = "Сохранить";
             }
 
@@ -113,7 +125,7 @@ namespace StudentsWebsite.WebUI.Controllers
                 user = new DbUser
                 {
 
-                    UserName = "",
+                    Email = "",
                     FirstName = firstName,
                     LastName = lastName,
                     Role = UserRoles.Student,
@@ -123,17 +135,17 @@ namespace StudentsWebsite.WebUI.Controllers
             }
             editViewModel.Student = user;
 
-            var ratings = dataRepository.Ratings.Where(r => r.Student_UserName == user.UserName);
+            var ratings = dataRepository.Ratings.Where(r => r.Student_UserName == user.Email);
             var lecturers = dataRepository.Users.Where(u => u.Role == UserRoles.Lecturer);
             editViewModel.Lecturers = lecturers.Select(l =>
             {
-                var rating = ratings.FirstOrDefault(r => r.Lecturer_UserName == l.UserName);
+                var rating = ratings.FirstOrDefault(r => r.Lecturer_UserName == l.Email);
                 return new Models.StudentEditViewModel.LecturerSelection
                 {
-                    LecturerUserName = l.UserName,
+                    LecturerUserName = l.Email,
                     LecturerFullName = l.FirstName + " " + l.LastName,
                     LecturerSubject = l.Subject,
-                    Rating = rating != null ? rating.Rate : -1,
+                    Rating = rating != null ? rating.Rate.Value : -1,
                     Selected = rating != null
                 };
             }).ToArray();
@@ -157,13 +169,13 @@ namespace StudentsWebsite.WebUI.Controllers
                     .Where(l => dataRepository.GetUser(l.LecturerUserName) != null)
                     .Select(l => new Rating
                     {
-                        Student_UserName = user.UserName,
+                        Student_UserName = user.Email,
                         Lecturer_UserName = l.LecturerUserName,
                         Rate = l.Rating
                     });
-                dataRepository.SaveRatings(newRatings, user.UserName);
+                dataRepository.SaveRatings(newRatings, user.Email);
 
-                return RedirectToAction("Card", new { userName = editViewModel.Student.UserName });
+                return RedirectToAction("Card", new { userName = editViewModel.Student.Email });
             }
             else
                 return Edit(editViewModel.StudentUserName);

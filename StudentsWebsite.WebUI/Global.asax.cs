@@ -8,7 +8,7 @@ using System.Web.Security;
 using Ninject;
 
 using System.Diagnostics;
-using StudentsWebsite.Domain.Entities;
+using StudentsWebsite.Data.Entities;
 
 namespace StudentsWebsite.WebUI
 {
@@ -24,7 +24,7 @@ namespace StudentsWebsite.WebUI
         public void Application_AcquireRequestState(object sender, EventArgs e)
         {
            
-            Domain.Abstract.IDataRepositoryOld dataRepository = DependencyResolver.Current.GetService<IKernel>().Get<Domain.Abstract.IDataRepositoryOld>();
+           /* Data.Abstract.IDataRepositoryOld dataRepository = DependencyResolver.Current.GetService<IKernel>().Get<Domain.Abstract.IDataRepositoryOld>();
             if (dataRepository == null)
             {
                 return;
@@ -51,12 +51,12 @@ namespace StudentsWebsite.WebUI
                     case UserRoles.Dean:
                         Session["Group"] = "Деканат"; break;
                 }
-            }
+            }*/
         }
        
         protected void Application_AuthenticateRequest(object sender, EventArgs e)
         {
-            Domain.Abstract.IDataRepositoryOld dataRepository = DependencyResolver.Current.GetService<IKernel>().Get<Domain.Abstract.IDataRepositoryOld>();
+          /*  Domain.Abstract.IDataRepositoryOld dataRepository = DependencyResolver.Current.GetService<IKernel>().Get<Domain.Abstract.IDataRepositoryOld>();
             if (Context.User != null && dataRepository.GetUser(User.Identity.Name) != null)
             {
                 Domain.Entities.DbUser user = dataRepository.GetUser(User.Identity.Name);
@@ -66,7 +66,7 @@ namespace StudentsWebsite.WebUI
                 
             }
             else
-                Debug.Print("AuthenticateRequest User = null");
+                Debug.Print("AuthenticateRequest User = null");*/
           
         }
     }

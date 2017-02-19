@@ -1,14 +1,147 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.ModelConfiguration.Configuration;
 using System.Linq;
 using System.Web;
-using StudentsWebsite.Domain.Entities;
-using StudentsWebsite.Domain.Abstract;
+using System.Web.Mvc;
+using System.Web.WebPages;
+using Ninject;
+using StudentsWebsite.Data;
+using StudentsWebsite.Data.Entities;
+using StudentsWebsite.Data.Abstract;
+using StudentsWebsite.Data.Repositories;
+using StudentsWebsite.Data.Services;
 
 namespace StudentsWebsite.WebUI.Helpers
 {
-    public static class TestDataTableGenerator
+    public class TestDataTableGenerator
     {
+        [Inject]
+        public IDbUserService DbUserService { get; set; }
+        [Inject]
+        public IStudentService StudentService { get; set; }
+        [Inject]
+        public ILecturerService LecturerService { get; set; }
+        [Inject]
+        public IStudentRepository StudentRepository { get; set; }
+        [Inject]
+        public ILecturerRepository LecturerRepository { get; set; }
+        [Inject]
+        public IDbUserRepository DbUserRepository { get; set; }
+        [Inject]
+        public IRatingService RatingService { get; set; }
+        [Inject]
+        public IRatingRepository RatingRepository { get; set; }
+
+
+        public void Generate(int studentsCount, int lecturersCount)
+        {
+            var students = GenerateStudents(studentsCount);
+            var lecturers = GenerateLecturers(lecturersCount);
+            GenerateDean("dean@mail.com");
+
+            GenerateRatings(students.ToArray(), lecturers.ToArray());
+        }
+
+        public void GenerateRatings(Student[] students, Lecturer[] lecturers, int minStudentsCount = 0, int maxStudentsCount = 10)
+        {
+            var rnd = new Random();
+            maxStudentsCount = students.Length < maxStudentsCount ? students.Length : maxStudentsCount;
+            
+            foreach (var lecturer in lecturers)
+            {
+                var studentsCount = rnd.Next(minStudentsCount, maxStudentsCount);
+
+                for (var i = minStudentsCount; i < studentsCount; i++)
+                {
+                    var student = students[rnd.Next(students.Length - 1)];
+
+                    var rating = new Rating
+                    {
+                        StudentId = student.Id,
+                        LecturerId = lecturer.Id,
+                        Rate = null
+                    };
+
+                    RatingService.Save(rating);
+                }
+            }
+        }
+
+        public DbUser GenerateDean(string email = null)
+        {
+            var user = GenerateUser(UserRoles.Dean);
+
+            if (!email.IsEmpty())
+                user.Email = email;
+
+            DbUserService.Save(user);
+
+            return DbUserRepository.ByEmail(user.Email);
+        }
+
+        public IEnumerable<Lecturer> GenerateLecturers(int count)
+        {
+            if (LecturerService == null)
+                LecturerService = DependencyResolver.Current.GetService<IKernel>().Get<ILecturerService>();
+
+            for (var i = 0; i < count; i++)
+            {
+                var lecturer = GenerateLecturer();
+                LecturerService.Save(lecturer);
+
+                yield return LecturerRepository.ByEmail(lecturer.User.Email);
+            }
+        }
+
+        public IEnumerable<Student> GenerateStudents(int count)
+        {
+            if (StudentService == null)
+                StudentService = DependencyResolver.Current.GetService<IKernel>().Get<IStudentService>();
+
+            for (var i = 0; i < count; i++)
+            {
+                var student = GenerateStudent();
+                StudentService.Save(student);
+
+                yield return StudentRepository.ByEmail(student.User.Email);
+            }
+        }
+
+        private Lecturer GenerateLecturer()
+        {
+            var user = GenerateUser(UserRoles.Lecturer);
+            return new Lecturer
+            {
+                User = user,
+                Subject = RandomDataGenerator.NextSubject()
+            };
+        }
+
+        private Student GenerateStudent()
+        {
+            var user = GenerateUser(UserRoles.Student);
+            return new Student
+            {
+                User = user,
+                AverageRating = null
+            };
+        }
+
+        private DbUser GenerateUser(UserRoles role)
+        {
+            string firstName, lastName;
+            RandomDataGenerator.RandomName(out firstName, out lastName);
+            return new DbUser
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Password = "123",
+                Role = role,
+                Email = RandomDataGenerator.RandomEmail()
+            };
+        }
+        
         public static void FillTable(IDataRepositoryOld repository)
         {
             int i, j;
@@ -29,7 +162,7 @@ namespace StudentsWebsite.WebUI.Helpers
             DbUser user;
 
             user = new DbUser(){
-                    UserName = "dean",
+                    Email = "dean",
                     Password = "dean",
                     FirstName = "Владимир",
                     LastName = "Петров",
@@ -39,7 +172,7 @@ namespace StudentsWebsite.WebUI.Helpers
             repository.SaveUser(user);
             user = new DbUser()
             {
-                UserName = "student",
+                Email = "student",
                 Password = "student",
                 FirstName = "Семён",
                 LastName = "Полупроводников",
@@ -49,7 +182,7 @@ namespace StudentsWebsite.WebUI.Helpers
             repository.SaveUser(user);
             user = new DbUser()
             {
-                UserName = "lecturer",
+                Email = "lecturer",
                 Password = "lecturer",
                 FirstName = "Дарья",
                 LastName = "Задушевная",
@@ -60,13 +193,13 @@ namespace StudentsWebsite.WebUI.Helpers
 
             for (i = 0; i < subjects.Length; i++)
             {
-                pass = RandomDataGenerator.RandomPassword(4);
-                while(repository.UserNameExists(login = RandomDataGenerator.RandomPassword(4)));
+                pass = RandomDataGenerator.RandomString(4);
+                while(repository.UserNameExists(login = RandomDataGenerator.RandomString(4)));
                 RandomDataGenerator.RandomName(out firstName, out lastName);
                 subject = subjects[i];
 
                 user = new DbUser(){
-                    UserName = login,
+                    Email = login,
                     Password = pass,
                     FirstName = firstName,
                     LastName = lastName,
@@ -80,14 +213,14 @@ namespace StudentsWebsite.WebUI.Helpers
 
             for (i = 0; i < 20; i++)
             {
-                pass = RandomDataGenerator.RandomPassword(4);
-                while (repository.UserNameExists(login = RandomDataGenerator.RandomPassword(4))) ;
+                pass = RandomDataGenerator.RandomString(4);
+                while (repository.UserNameExists(login = RandomDataGenerator.RandomString(4))) ;
                 RandomDataGenerator.RandomName(out firstName, out lastName);
                
 
                 user = new DbUser()
                 {
-                    UserName = login,
+                    Email = login,
                     Password = pass,
                     FirstName = firstName,
                     LastName = lastName,                    
@@ -114,8 +247,8 @@ namespace StudentsWebsite.WebUI.Helpers
                     index = rnd.Next(students.Length - 1);
                     rating = new Rating()
                     {
-                        Student_UserName = students[index].UserName,
-                        Lecturer_UserName = lecturers[i].UserName,
+                        Student_UserName = students[index].Email,
+                        Lecturer_UserName = lecturers[i].Email,
                         Rate = rnd.Next(-1, 100)
                     };
                     ratings.Add(rating);

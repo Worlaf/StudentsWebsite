@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using StudentsWebsite.Domain.Entities;
-using StudentsWebsite.Domain.Abstract;
+using StudentsWebsite.Data.Entities;
+using StudentsWebsite.Data.Abstract;
 
 
-namespace StudentsWebsite.Domain.Concrete
+namespace StudentsWebsite.Data.Concrete
 {
     public class EFDataRepository : IDataRepositoryOld
     {
@@ -24,11 +24,11 @@ namespace StudentsWebsite.Domain.Concrete
 
         public void SaveUser(DbUser user)
         {
-            if (!UserNameExists(user.UserName))
+            if (!UserNameExists(user.Email))
                 context.Users.Add(user);
             else
             {
-                var dbEntry = context.Users.Find(user.UserName);
+                var dbEntry = context.Users.Find(user.Email);
                 if (dbEntry != null)
                 {
                     dbEntry.FirstName = user.FirstName;

@@ -1,4 +1,4 @@
-﻿@using StudentsWebsite.Domain.Entities
+﻿@using StudentsWebsite.Data.Entities
 @using StudentsWebsite.WebUI.Utility
 @model StudentsWebsite.WebUI.Models.StudentEditViewModel
 
@@ -14,7 +14,7 @@
         @Model.Student.FirstName @Model.Student.LastName
         @if (Context.User.CheckRole(UserRoles.Dean, UserRoles.Lecturer))
         {
-            <a class="btn btn-default" href="~/Students/Edit?userName=@Model.Student.UserName">
+            <a class="btn btn-default" href="~/Students/Edit?userName=@Model.Student.Email">
                 <span class="glyphicon glyphicon-pencil"></span>Редактировать
             </a>
         }

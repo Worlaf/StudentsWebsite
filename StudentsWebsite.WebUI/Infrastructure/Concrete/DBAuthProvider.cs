@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Security;
-using StudentsWebsite.Domain.Entities;
+using StudentsWebsite.Data.Entities;
 
 namespace StudentsWebsite.WebUI.Infrastructure.Concrete
 {
     public class DBAuthProvider : Infrastructure.Abstract.IAuthProvider
     {
-        private Domain.Abstract.IDataRepositoryOld dataRepository;
+        private Data.Abstract.IDataRepositoryOld dataRepository;
 
-        public DBAuthProvider(Domain.Abstract.IDataRepositoryOld dataRepository)
+        public DBAuthProvider(Data.Abstract.IDataRepositoryOld dataRepository)
         {
             this.dataRepository = dataRepository;
         }
 
         public bool ValidateUser(string username, string password)
         {
-            DbUser user = dataRepository.Users.FirstOrDefault (u => u.UserName == username && u.Password == password);
+            DbUser user = dataRepository.Users.FirstOrDefault (u => u.Email == username && u.Password == password);
             return user != null;
         }
         public bool Login(string username, string password)

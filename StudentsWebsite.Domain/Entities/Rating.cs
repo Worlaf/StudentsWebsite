@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace StudentsWebsite.Domain.Entities
+namespace StudentsWebsite.Data.Entities
 {
     /// <summary>
     /// Оценка
     /// </summary>
-    public class Rating : TEntity
+    public class Rating : BdEntity
     {
-        public uint StudentId { get; set; }
-        public DbUser Student { get; set; }
-        public uint LecturerId { get; set; }
-        public DbUser Lecturer { get; set; }
+        public Guid StudentId { get; set; }
+        public Student Student { get; set; }
+        public Guid LecturerId { get; set; }
+        public Lecturer Lecturer { get; set; }
 
         //Заменить _UserName на Id во всех использованиях
         public string Student_UserName { get; set; }
@@ -21,6 +21,6 @@ namespace StudentsWebsite.Domain.Entities
         /// <summary>
         /// Оценка по 100бальной системе
         /// </summary>
-        public int Rate { get; set; }
+        public int? Rate { get; set; }
     }
 }

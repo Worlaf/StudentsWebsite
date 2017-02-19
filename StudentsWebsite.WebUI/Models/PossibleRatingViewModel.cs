@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using StudentsWebsite.Domain.Entities;
+using StudentsWebsite.Data.Entities;
 
 namespace StudentsWebsite.WebUI.Models
 {
@@ -17,9 +17,9 @@ namespace StudentsWebsite.WebUI.Models
 
         public PossibleRatingViewModel(DbUser student, DbUser lecturer, int rating, bool selected)
         {
-            StudentName = student.UserName;
+            StudentName = student.Email;
             StudentFullName = student.FirstName + " " + student.LastName;
-            LecturerName = lecturer.UserName;
+            LecturerName = lecturer.Email;
             LecturerFullName = lecturer.FirstName + " " + lecturer.LastName;
             Rating = rating;
             Selected = selected;

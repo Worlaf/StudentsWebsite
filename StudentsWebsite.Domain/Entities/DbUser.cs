@@ -5,15 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
+using System.Data.Entity.ModelConfiguration.Conventions;
 
-namespace StudentsWebsite.Domain.Entities
+namespace StudentsWebsite.Data.Entities
 {
-    public class DbUser : TEntity
+    public class DbUser : BdEntity
     {
         [StringLength(64)]
-        [Index(IsUnique=true)]
         [Required]
-        public string UserName { get; set; }
+        [Index(IsUnique = true)]
+        public string Email { get; set; }
         [Required]
         public string Password { get; set; }
         [Required]

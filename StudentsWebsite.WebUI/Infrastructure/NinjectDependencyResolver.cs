@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Moq;
 using Ninject;
-using StudentsWebsite.Domain.Abstract;
-using StudentsWebsite.Domain.Concrete;
+using StudentsWebsite.Data.Abstract;
+using StudentsWebsite.Data.Concrete;
 using StudentsWebsite.WebUI.Infrastructure.Abstract;
 using StudentsWebsite.WebUI.Infrastructure.Concrete;
 
